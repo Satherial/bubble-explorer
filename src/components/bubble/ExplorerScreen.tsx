@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { X, ChevronRight } from "lucide-react";
 import type { BubbleNode, ParsedMap } from "@/lib/bubble-parser";
 import { BubbleField } from "./BubbleField";
+import * as THREE from "three";
 
 export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () => void }) {
   // Path is an array of nodes from root selection down to current parent.
@@ -22,9 +23,6 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
   const zoomOut = useCallback(() => {
     setPath((p) => (p.length > initialPath.length ? p.slice(0, -1) : p));
   }, [initialPath.length]);
-
-
-
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -70,22 +68,21 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
               })}
             </nav>
           </div>
-          <button
-            onClick={onClear}
-            className="shrink-0 inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
-            aria-label="Rimuovi file"
-          >
-            <X className="h-4 w-4" /> Rimuovi file
-          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">Three.js v{THREE.REVISION}</span>
+            <button
+              onClick={onClear}
+              className="shrink-0 inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+              aria-label="Rimuovi file"
+            >
+              <X className="h-4 w-4" /> Rimuovi file
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-6">
-        <BubbleField
-          nodes={currentNodes}
-          depth={path.length}
-          onSelect={select}
-        />
+        <BubbleField nodes={currentNodes} depth={path.length} onSelect={select} />
       </main>
     </div>
   );

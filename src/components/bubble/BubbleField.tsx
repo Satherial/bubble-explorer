@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, memo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Html, OrbitControls, Environment } from "@react-three/drei";
 import { useSpring, animated } from "@react-spring/three";
@@ -17,7 +17,7 @@ function radiusForDepth(depth: number) {
 // Deterministic pseudo-random in [-0.5, 0.5) from integer seed
 function seeded(i: number) {
   const x = Math.sin(i * 9301 + 49297) * 233280;
-  return (x - Math.floor(x)) - 0.5;
+  return x - Math.floor(x) - 0.5;
 }
 
 function computePositions(count: number): [number, number, number][] {
@@ -150,9 +150,6 @@ export function BubbleField({
   depth: number;
   onSelect: (node: BubbleNode) => void;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   const positions = useMemo(() => computePositions(nodes.length), [nodes.length]);
 
   useEffect(() => {
@@ -161,20 +158,15 @@ export function BubbleField({
     };
   }, []);
 
-  if (!mounted) {
-    return <div className="h-[calc(100vh-120px)] w-full" />;
-  }
-
   return (
-    <div
-      className="w-full"
-      style={{ height: "calc(100vh - 120px)", background: "#0a0a0f" }}
-    >
+    <div className="w-full" style={{ height: "calc(100vh - 120px)", background: "#0a0a0f" }}>
       <Canvas
-        key={depth}
         camera={{ position: [0, 0, 16], fov: 50 }}
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false }}
+        gl={{
+          antialias: true,
+          alpha: false,
+        }}
       >
         <color attach="background" args={["#0a0a0f"]} />
         <ambientLight intensity={0.4} />
@@ -204,3 +196,6 @@ export function BubbleField({
     </div>
   );
 }
+
+// Prevent unnecessary re-renders that cause WebGL context loss
+export default memo(BubbleField);

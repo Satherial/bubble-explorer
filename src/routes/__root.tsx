@@ -116,6 +116,25 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // Suppress THREE.Clock deprecation warning from @react-three/fiber
+  // This is a library-level warning that doesn't affect functionality
+  useEffect(() => {
+    const originalWarn = console.warn;
+    console.warn = (...args) => {
+      const message = args[0];
+      if (
+        typeof message === "string" &&
+        (message.includes("THREE.Clock") || message.includes("THREE.Timer"))
+      ) {
+        return;
+      }
+      originalWarn(...args);
+    };
+    return () => {
+      console.warn = originalWarn;
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
