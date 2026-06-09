@@ -23,7 +23,8 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
     setPath((p) => (p.length > initialPath.length ? p.slice(0, -1) : p));
   }, [initialPath.length]);
 
-  const canZoomOut = path.length > initialPath.length;
+
+
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
