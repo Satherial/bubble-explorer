@@ -7,11 +7,15 @@ import type { BubbleNode } from "@/lib/bubble-parser";
 import { formatCompact } from "@/lib/bubble-parser";
 import { bubbleColor } from "./Bubble";
 
-function radiusForDepth(depth: number) {
-  if (depth === 0) return 2.5;
-  if (depth === 1) return 1.8;
-  if (depth === 2) return 1.3;
-  return 1.0;
+function radiusForDepth(depth: number, leafCount: number = 1) {
+  // Base radius based on depth
+  const baseRadius = depth === 0 ? 2.5 : depth === 1 ? 1.8 : depth === 2 ? 1.3 : 1.0;
+
+  // Scale factor based on leaf count (using log to prevent overly large bubbles)
+  // Minimum scale is 1.0, maximum is around 2.5 for very large counts
+  const scaleFactor = Math.max(1.0, Math.log(leafCount + 1) * 0.5);
+
+  return baseRadius * scaleFactor;
 }
 
 // Deterministic pseudo-random in [-0.5, 0.5) from integer seed
@@ -47,7 +51,7 @@ function Bubble3D({
   const [hovered, setHovered] = useState(false);
   const isLeaf = node.children.length === 0;
   const color = bubbleColor(node, depth);
-  const radius = radiusForDepth(depth);
+  const radius = radiusForDepth(depth, node.leafCount);
 
   const { scale } = useSpring({
     from: { scale: 0 },
