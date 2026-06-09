@@ -84,8 +84,6 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
           nodes={currentNodes}
           depth={path.length}
           onSelect={select}
-          onZoomOut={zoomOut}
-          canZoomOut={canZoomOut}
         />
       </main>
     </div>
