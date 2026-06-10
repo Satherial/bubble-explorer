@@ -176,7 +176,8 @@ export function BubbleField({
         <ambientLight intensity={0.4} />
         <directionalLight position={[10, 10, 10]} intensity={1} />
         <directionalLight position={[-8, -5, 5]} intensity={0.4} color="#8ecae6" />
-        <Environment preset="city" />
+        <pointLight position={[0, 0, 10]} intensity={0.5} />
+        <ContextLossLogger />
         {nodes.map((n, i) => (
           <Bubble3D
             key={`${depth}-${i}-${n.label}`}
