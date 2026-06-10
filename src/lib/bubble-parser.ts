@@ -94,8 +94,24 @@ function parseNode(el: Element): BubbleNode {
     missingCount = children.reduce((a, c) => a + c.missingCount, 0);
   }
 
+  const label = el.getAttribute("label") ?? "";
+
+  // Category: detect from own label, otherwise pick dominant from children
+  let category: BubbleCategory = detectCategory(label) ?? "generic";
+  if (category === "generic" && children.length > 0) {
+    const counts = new Map<BubbleCategory, number>();
+    for (const c of children) {
+      if (c.category !== "generic") {
+        counts.set(c.category, (counts.get(c.category) ?? 0) + c.leafCount);
+      }
+    }
+    if (counts.size > 0) {
+      category = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    }
+  }
+
   return {
-    label: el.getAttribute("label") ?? "",
+    label,
     value: rawValue,
     color: el.getAttribute("color"),
     children,
@@ -104,6 +120,7 @@ function parseNode(el: Element): BubbleNode {
     missingCount,
     numericValue: num,
     isMissing: missing || (children.length === 0 && num == null),
+    category,
   };
 }
 
