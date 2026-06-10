@@ -3,9 +3,34 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, OrbitControls } from "@react-three/drei";
 import { useSpring, animated } from "@react-spring/three";
 import * as THREE from "three";
-import type { BubbleNode } from "@/lib/bubble-parser";
+import {
+  Users,
+  Youtube,
+  Tv,
+  Radio,
+  Newspaper,
+  Eye,
+  UserCheck,
+  Hash,
+  AlertTriangle,
+  CheckCircle2,
+  Layers,
+  type LucideIcon,
+} from "lucide-react";
+import type { BubbleNode, BubbleCategory } from "@/lib/bubble-parser";
 import { formatCompact } from "@/lib/bubble-parser";
 import { bubbleColor } from "./Bubble";
+
+const CATEGORY_META: Record<BubbleCategory, { icon: LucideIcon; label: string }> = {
+  followers: { icon: Users, label: "follower" },
+  subscribers: { icon: Youtube, label: "iscritti" },
+  viewers: { icon: Tv, label: "spettatori" },
+  listeners: { icon: Radio, label: "ascoltatori" },
+  readers: { icon: Newspaper, label: "lettori" },
+  visits: { icon: Eye, label: "visite" },
+  members: { icon: UserCheck, label: "membri" },
+  generic: { icon: Hash, label: "totale" },
+};
 
 function radiusForDepth(depth: number, leafCount: number = 1) {
   // Base radius based on depth
