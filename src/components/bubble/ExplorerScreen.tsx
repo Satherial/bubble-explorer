@@ -40,10 +40,10 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 backdrop-blur bg-background/80 border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
           <div className="min-w-0">
             {map.title && (
-              <h1 className="text-xl font-bold text-foreground truncate">{map.title}</h1>
+              <h1 className="text-base sm:text-xl font-bold text-foreground truncate">{map.title}</h1>
             )}
             <nav className="flex items-center gap-1 text-sm text-muted-foreground flex-wrap mt-1">
               <button
