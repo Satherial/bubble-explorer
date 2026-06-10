@@ -83,7 +83,7 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6">
+      <main className="max-w-6xl mx-auto px-2 sm:px-6">
         <BubbleField nodes={currentNodes} depth={path.length} onSelect={select} />
       </main>
     </div>
