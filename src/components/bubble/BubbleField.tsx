@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, memo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Html, OrbitControls, Environment } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Html, OrbitControls } from "@react-three/drei";
 import { useSpring, animated } from "@react-spring/three";
 import * as THREE from "three";
 import type { BubbleNode } from "@/lib/bubble-parser";
