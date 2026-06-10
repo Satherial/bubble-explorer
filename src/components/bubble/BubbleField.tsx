@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, memo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Html, OrbitControls, Environment } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Html, OrbitControls } from "@react-three/drei";
 import { useSpring, animated } from "@react-spring/three";
 import * as THREE from "three";
 import type { BubbleNode } from "@/lib/bubble-parser";
@@ -32,6 +32,25 @@ function computePositions(count: number): [number, number, number][] {
     const jitterZ = seeded(i + 1) * 3;
     return [Math.cos(angle) * radius, Math.sin(angle) * radius, jitterZ];
   });
+}
+
+function ContextLossLogger() {
+  const { gl } = useThree();
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      console.error("[BubbleField] WebGL context LOST", e);
+    };
+    const onRestored = () => console.warn("[BubbleField] WebGL context restored");
+    canvas.addEventListener("webglcontextlost", onLost);
+    canvas.addEventListener("webglcontextrestored", onRestored);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", onLost);
+      canvas.removeEventListener("webglcontextrestored", onRestored);
+    };
+  }, [gl]);
+  return null;
 }
 
 function Bubble3D({
@@ -85,16 +104,9 @@ function Bubble3D({
         document.body.style.cursor = "auto";
       }}
     >
-      <sphereGeometry args={[radius, 48, 48]} />
-      <meshPhysicalMaterial
-        color={color}
-        roughness={0.25}
-        metalness={0.15}
-        clearcoat={0.8}
-        clearcoatRoughness={0.2}
-        transmission={0.05}
-        reflectivity={0.6}
-      />
+      <sphereGeometry args={[radius, 32, 32]} />
+      <meshStandardMaterial color={color} roughness={0.35} metalness={0.2} />
+
       <Html
         center
         distanceFactor={10}
@@ -176,7 +188,8 @@ export function BubbleField({
         <ambientLight intensity={0.4} />
         <directionalLight position={[10, 10, 10]} intensity={1} />
         <directionalLight position={[-8, -5, 5]} intensity={0.4} color="#8ecae6" />
-        <Environment preset="city" />
+        <pointLight position={[0, 0, 10]} intensity={0.5} />
+        <ContextLossLogger />
         {nodes.map((n, i) => (
           <Bubble3D
             key={`${depth}-${i}-${n.label}`}
