@@ -1,3 +1,13 @@
+export type BubbleCategory =
+  | "followers"
+  | "subscribers"
+  | "viewers"
+  | "listeners"
+  | "readers"
+  | "visits"
+  | "members"
+  | "generic";
+
 export interface BubbleNode {
   label: string;
   value: string | null;
@@ -9,12 +19,31 @@ export interface BubbleNode {
   missingCount: number;
   numericValue: number | null;
   isMissing: boolean;
+  category: BubbleCategory;
 }
 
 export interface ParsedMap {
   title: string | null;
   roots: BubbleNode[];
 }
+
+const CATEGORY_PATTERNS: Array<{ cat: BubbleCategory; re: RegExp }> = [
+  { cat: "followers", re: /follow|fan\b|seguaci|instagram|facebook|tiktok|twitter|x\b/i },
+  { cat: "subscribers", re: /iscritt|subscrib|abbonat|newsletter|youtube|canal/i },
+  { cat: "viewers", re: /spettator|viewer|telespett|ascolt.*tv|tv\b|rete|televis/i },
+  { cat: "listeners", re: /ascoltator|listener|radio|podcast/i },
+  { cat: "readers", re: /lettor|reader|copie|tiratura|quotidian|giornal|stampa|rivist/i },
+  { cat: "visits", re: /visit|unique|utenti unici|page ?view|traffico|sessioni/i },
+  { cat: "members", re: /membri|member|iscritti|tesserati|community/i },
+];
+
+function detectCategory(text: string): BubbleCategory | null {
+  for (const { cat, re } of CATEGORY_PATTERNS) {
+    if (re.test(text)) return cat;
+  }
+  return null;
+}
+
 
 const MISSING_TOKENS = new Set(["n.d.", "nd", "n/a", "na", "-", "?", ""]);
 
@@ -65,8 +94,24 @@ function parseNode(el: Element): BubbleNode {
     missingCount = children.reduce((a, c) => a + c.missingCount, 0);
   }
 
+  const label = el.getAttribute("label") ?? "";
+
+  // Category: detect from own label, otherwise pick dominant from children
+  let category: BubbleCategory = detectCategory(label) ?? "generic";
+  if (category === "generic" && children.length > 0) {
+    const counts = new Map<BubbleCategory, number>();
+    for (const c of children) {
+      if (c.category !== "generic") {
+        counts.set(c.category, (counts.get(c.category) ?? 0) + c.leafCount);
+      }
+    }
+    if (counts.size > 0) {
+      category = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    }
+  }
+
   return {
-    label: el.getAttribute("label") ?? "",
+    label,
     value: rawValue,
     color: el.getAttribute("color"),
     children,
@@ -75,6 +120,7 @@ function parseNode(el: Element): BubbleNode {
     missingCount,
     numericValue: num,
     isMissing: missing || (children.length === 0 && num == null),
+    category,
   };
 }
 

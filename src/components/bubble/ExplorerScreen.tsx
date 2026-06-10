@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { X, ChevronRight } from "lucide-react";
 import type { BubbleNode, ParsedMap } from "@/lib/bubble-parser";
 import { BubbleField } from "./BubbleField";
-import * as THREE from "three";
+import pkg from "../../../package.json";
 
 export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () => void }) {
   // Path is an array of nodes from root selection down to current parent.
@@ -40,10 +40,10 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 backdrop-blur bg-background/80 border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
           <div className="min-w-0">
             {map.title && (
-              <h1 className="text-xl font-bold text-foreground truncate">{map.title}</h1>
+              <h1 className="text-base sm:text-xl font-bold text-foreground truncate">{map.title}</h1>
             )}
             <nav className="flex items-center gap-1 text-sm text-muted-foreground flex-wrap mt-1">
               <button
@@ -68,20 +68,22 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
               })}
             </nav>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">Three.js v{THREE.REVISION}</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden sm:inline text-xs text-muted-foreground">
+              Bubble Explorer v{pkg.version}
+            </span>
             <button
               onClick={onClear}
-              className="shrink-0 inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+              className="shrink-0 inline-flex items-center gap-1 rounded-full border border-border px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-foreground hover:bg-muted transition-colors"
               aria-label="Rimuovi file"
             >
-              <X className="h-4 w-4" /> Rimuovi file
+              <X className="h-4 w-4" /> <span className="hidden sm:inline">Rimuovi file</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6">
+      <main className="max-w-6xl mx-auto px-2 sm:px-6">
         <BubbleField nodes={currentNodes} depth={path.length} onSelect={select} />
       </main>
     </div>

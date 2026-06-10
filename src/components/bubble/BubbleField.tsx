@@ -3,9 +3,34 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, OrbitControls } from "@react-three/drei";
 import { useSpring, animated } from "@react-spring/three";
 import * as THREE from "three";
-import type { BubbleNode } from "@/lib/bubble-parser";
+import {
+  Users,
+  Youtube,
+  Tv,
+  Radio,
+  Newspaper,
+  Eye,
+  UserCheck,
+  Hash,
+  AlertTriangle,
+  CheckCircle2,
+  Layers,
+  type LucideIcon,
+} from "lucide-react";
+import type { BubbleNode, BubbleCategory } from "@/lib/bubble-parser";
 import { formatCompact } from "@/lib/bubble-parser";
 import { bubbleColor } from "./Bubble";
+
+const CATEGORY_META: Record<BubbleCategory, { icon: LucideIcon; label: string }> = {
+  followers: { icon: Users, label: "follower" },
+  subscribers: { icon: Youtube, label: "iscritti" },
+  viewers: { icon: Tv, label: "spettatori" },
+  listeners: { icon: Radio, label: "ascoltatori" },
+  readers: { icon: Newspaper, label: "lettori" },
+  visits: { icon: Eye, label: "visite" },
+  members: { icon: UserCheck, label: "membri" },
+  generic: { icon: Hash, label: "totale" },
+};
 
 function radiusForDepth(depth: number, leafCount: number = 1) {
   // Base radius based on depth
@@ -109,49 +134,61 @@ function Bubble3D({
 
       <Html
         center
-        distanceFactor={10}
+        distanceFactor={6}
         zIndexRange={[10, 0]}
         style={{ pointerEvents: "none", userSelect: "none" }}
       >
-        <div
-          className="flex flex-col items-center gap-1 text-white text-center"
-          style={{ width: radius * 60, transform: "translateZ(0)" }}
-        >
-          <div
-            className="font-bold leading-tight drop-shadow-lg"
-            style={{ fontSize: Math.max(11, 16 - depth) }}
-          >
-            {node.label}
-          </div>
-          <div className="flex flex-col items-center gap-0.5 text-[10px] font-medium">
-            {!isLeaf && (
-              <span className="rounded-full bg-white/25 backdrop-blur px-2 py-0.5">
-                {node.leafCount} elementi
-              </span>
-            )}
-            {node.sum > 0 && (
-              <span className="rounded-full bg-white/25 backdrop-blur px-2 py-0.5">
-                Σ {formatCompact(node.sum)}
-              </span>
-            )}
-            {isLeaf && node.numericValue != null && node.sum === 0 && (
-              <span className="rounded-full bg-white/25 backdrop-blur px-2 py-0.5">
-                {formatCompact(node.numericValue)}
-              </span>
-            )}
-            {node.missingCount > 0 ? (
-              <span className="rounded-full bg-amber-400/90 text-amber-950 px-2 py-0.5">
-                ⚠️ {node.missingCount} n.d.
-              </span>
-            ) : (
-              !isLeaf && (
-                <span className="rounded-full bg-emerald-400/90 text-emerald-950 px-2 py-0.5">
-                  ✓ completo
-                </span>
-              )
-            )}
-          </div>
-        </div>
+        {(() => {
+          const meta = CATEGORY_META[node.category];
+          const Icon = meta.icon;
+          const primaryValue = isLeaf && node.numericValue != null ? node.numericValue : node.sum;
+          const showPrimary = primaryValue > 0;
+          return (
+            <div
+              className="flex flex-col items-center gap-2 text-white text-center"
+              style={{ width: Math.max(180, radius * 90), transform: "translateZ(0)" }}
+            >
+              <div
+                className="font-extrabold leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+                style={{ fontSize: Math.max(15, 22 - depth * 2) }}
+              >
+                {node.label}
+              </div>
+              {showPrimary && (
+                <div className="inline-flex items-center gap-2 rounded-2xl bg-black/55 backdrop-blur-md px-4 py-2 shadow-lg ring-1 ring-white/15">
+                  <Icon className="h-5 w-5 shrink-0" strokeWidth={2.5} />
+                  <span className="text-2xl font-black tabular-nums leading-none">
+                    {formatCompact(primaryValue)}
+                  </span>
+                  <span className="text-[11px] uppercase tracking-wider opacity-80 leading-none">
+                    {meta.label}
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px] font-semibold">
+                {!isLeaf && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/20 backdrop-blur px-2.5 py-1">
+                    <Layers className="h-3 w-3" />
+                    {node.leafCount} elementi
+                  </span>
+                )}
+                {node.missingCount > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-400 text-amber-950 px-2.5 py-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {node.missingCount} n.d.
+                  </span>
+                ) : (
+                  !isLeaf && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400 text-emerald-950 px-2.5 py-1">
+                      <CheckCircle2 className="h-3 w-3" />
+                      completo
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </Html>
     </animated.mesh>
   );
