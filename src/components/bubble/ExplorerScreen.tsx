@@ -68,14 +68,16 @@ export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () =
               })}
             </nav>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">Three.js v{THREE.REVISION}</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden sm:inline text-xs text-muted-foreground">
+              Bubble Explorer v{pkg.version}
+            </span>
             <button
               onClick={onClear}
-              className="shrink-0 inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+              className="shrink-0 inline-flex items-center gap-1 rounded-full border border-border px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-foreground hover:bg-muted transition-colors"
               aria-label="Rimuovi file"
             >
-              <X className="h-4 w-4" /> Rimuovi file
+              <X className="h-4 w-4" /> <span className="hidden sm:inline">Rimuovi file</span>
             </button>
           </div>
         </div>
