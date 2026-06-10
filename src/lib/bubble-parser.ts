@@ -1,3 +1,13 @@
+export type BubbleCategory =
+  | "followers"
+  | "subscribers"
+  | "viewers"
+  | "listeners"
+  | "readers"
+  | "visits"
+  | "members"
+  | "generic";
+
 export interface BubbleNode {
   label: string;
   value: string | null;
@@ -9,12 +19,31 @@ export interface BubbleNode {
   missingCount: number;
   numericValue: number | null;
   isMissing: boolean;
+  category: BubbleCategory;
 }
 
 export interface ParsedMap {
   title: string | null;
   roots: BubbleNode[];
 }
+
+const CATEGORY_PATTERNS: Array<{ cat: BubbleCategory; re: RegExp }> = [
+  { cat: "followers", re: /follow|fan\b|seguaci|instagram|facebook|tiktok|twitter|x\b/i },
+  { cat: "subscribers", re: /iscritt|subscrib|abbonat|newsletter|youtube|canal/i },
+  { cat: "viewers", re: /spettator|viewer|telespett|ascolt.*tv|tv\b|rete|televis/i },
+  { cat: "listeners", re: /ascoltator|listener|radio|podcast/i },
+  { cat: "readers", re: /lettor|reader|copie|tiratura|quotidian|giornal|stampa|rivist/i },
+  { cat: "visits", re: /visit|unique|utenti unici|page ?view|traffico|sessioni/i },
+  { cat: "members", re: /membri|member|iscritti|tesserati|community/i },
+];
+
+function detectCategory(text: string): BubbleCategory | null {
+  for (const { cat, re } of CATEGORY_PATTERNS) {
+    if (re.test(text)) return cat;
+  }
+  return null;
+}
+
 
 const MISSING_TOKENS = new Set(["n.d.", "nd", "n/a", "na", "-", "?", ""]);
 
