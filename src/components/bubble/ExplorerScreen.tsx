@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { X, ChevronRight } from "lucide-react";
 import type { BubbleNode, ParsedMap } from "@/lib/bubble-parser";
 import { BubbleField } from "./BubbleField";
-import * as THREE from "three";
+import pkg from "../../../package.json";
 
 export function ExplorerScreen({ map, onClear }: { map: ParsedMap; onClear: () => void }) {
   // Path is an array of nodes from root selection down to current parent.
