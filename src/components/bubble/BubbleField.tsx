@@ -34,6 +34,25 @@ function computePositions(count: number): [number, number, number][] {
   });
 }
 
+function ContextLossLogger() {
+  const { gl } = useThree();
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      console.error("[BubbleField] WebGL context LOST", e);
+    };
+    const onRestored = () => console.warn("[BubbleField] WebGL context restored");
+    canvas.addEventListener("webglcontextlost", onLost);
+    canvas.addEventListener("webglcontextrestored", onRestored);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", onLost);
+      canvas.removeEventListener("webglcontextrestored", onRestored);
+    };
+  }, [gl]);
+  return null;
+}
+
 function Bubble3D({
   node,
   position,
