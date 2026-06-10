@@ -85,16 +85,9 @@ function Bubble3D({
         document.body.style.cursor = "auto";
       }}
     >
-      <sphereGeometry args={[radius, 48, 48]} />
-      <meshPhysicalMaterial
-        color={color}
-        roughness={0.25}
-        metalness={0.15}
-        clearcoat={0.8}
-        clearcoatRoughness={0.2}
-        transmission={0.05}
-        reflectivity={0.6}
-      />
+      <sphereGeometry args={[radius, 32, 32]} />
+      <meshStandardMaterial color={color} roughness={0.35} metalness={0.2} />
+
       <Html
         center
         distanceFactor={10}
